@@ -1,0 +1,2 @@
+awk '{time[$1" "$2]++}END{for(i in time){print i"\t\t"time[i]}}' /var/log/yum.log |sort -k3 -rn 
+

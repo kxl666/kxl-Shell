@@ -1,0 +1,2 @@
+grep Mar  /var/log/yum.log |awk -F'[ :]' '{day[$3]++;totall++}END{for(i in day){printf i
+" ";printf day[i]"\t";printf"%.2f",day[i]/totall*100;print "%"}}'

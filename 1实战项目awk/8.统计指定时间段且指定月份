@@ -1,0 +1,2 @@
+awk ' $3>="03:42:26" && $3<="16:46:39"{if($1=="Mar"){time[$1" "$2]++}}END{for(i in time){print i"\t\t"time[i]}}' /var/log/yum.log
+

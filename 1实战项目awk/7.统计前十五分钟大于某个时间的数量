@@ -1,0 +1,1 @@
+date=$(date -d '15 minute ago' +%H:%M); awk -v date=$date '$3<date{i++}END{print i}' /var/log/yum.log

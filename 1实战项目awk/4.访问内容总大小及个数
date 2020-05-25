@@ -1,0 +1,1 @@
+grep Mar  /var/log/yum.log |awk -F'[ :]' 'BEGIN{print "time 总数 和   名称"}{day[$3]++;time[$3]+=$4}END{for(i in day){printf "%5-s%5-s%5-s%25-s\n",i,day[i],time[i],$NF}}'

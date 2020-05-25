@@ -1,0 +1,1 @@
+grep Installed /var/log/yum.log|awk '{number[$1]++}END{for(i in number){if(number[i]>1){print i,number[i]}}}'|sort -k2 -rn 

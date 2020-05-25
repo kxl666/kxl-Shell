@@ -1,0 +1,3 @@
+#!/bin/bash
+awk '$3>="03:42:26" && $3<="16:46:39"{print $0}' /var/log/yum.log |grep Mar|wc -l
+
