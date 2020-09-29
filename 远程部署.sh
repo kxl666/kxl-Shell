@@ -1,6 +1,16 @@
 #!/bin/bash
+if ! hsku.sh ;then wget https://raw.githubusercontent.com/kxl666/kxl666/master/hsku.sh && echo -en "\e[1;35m  下载函数库成功 \e[0m";fi
+echo
+sleep 2
+while [ ! -e hsku.sh ]
+do
+echo -en "\e[1;34m  下载函数库成功 \e[0m"
+echo 
+wget https://raw.githubusercontent.com/kxl666/kxl666/master/hsku.sh
+done
+
 which expect &>/dev/null || yum -y install expect
-mkdir /shiyan
+mkdir /shiyan &>/dev/null
 #首先判断有无密钥
 if [ ! -e ~/.ssh/id_rsa ]
 then
@@ -32,8 +42,9 @@ read -e -n 1 -p "需要更新密钥吗？[y|n]" x
 done
 #然后进行公钥推送
 cat >1.txt <<EOF
-192.168.160.134
-192.168.160.136
+192.168.160.10
+192.168.160.20
+192.168.160.30
 EOF
 #-----------------
 while :
@@ -53,10 +64,11 @@ do
 if [ ! -e ~/.ssh/k* ] || ! grep "$ip" ~/.ssh/k* &>/dev/null
 then
 expect <<EOF
+spawn ssh-copy-id $user@$ip
 expect "(yes/no)?"
 send "yes\r"
 expect "password:"
-send "\`123456kqf"
+send "\`123456kqf\r"
 expect eof
 EOF
 fi
@@ -143,14 +155,15 @@ done <1.txt
 #最后开始进行远程yum源配置
 if [ $user != root ]
 then 
- exit
+exit
 else
 
 echo -en "\e[1;34m  是否需要远程yum源配置[y|n]： \e[0m" 
 read  qw
 if [ ! "$qw" = "y" ]
 then
- exit
+read -e -i "y" -p "是否继续[y|n]" ulk
+if [ $ulk = n ] ;then exit ;else echo "将继续!"  ;fi
 else
 
 while read ip
@@ -183,9 +196,11 @@ wget http://mirrors.163.com/.help/CentOS6-Base-163.repo
  cd -
 EOF
 done < 1.txt
+fi
+fi
 
-read -e -i "y" -p "是否进行DNS主从配置[y|n]：" ff
-if [ "$ff" = "y" ]
+read -e -i "n" -p "是否进行DNS主从配置[y|n]：" fof
+if [ "$fof" = "y" ]
 then
 #开始对DNS服务端配置
 echo "与从主机ip是之前公钥推送过的保持一致"
@@ -290,17 +305,60 @@ echo GATEWAY=$k >>/etc/sysconfig/network-scripts/*ens33
 eof
 fi
 else
-exit
-fi
+read -e -i "y" -p "是否继续[y|n]" ulkg
+if [ $ulkg = n ] ;then exit ;else echo "将继续!"  ;fi
 
 fi
-fi 
+
 wait
-rm -rf 1.txt
 echo
 
+read -e -i "no" -p "是否进行消息队列配置[yes|no]" ops
+if  [ $ops = yes ]
+then
 
+while read gh in 
+do
+ssh $gh <<EOF
+#1. YUM安装：rabbitmq-server 消息队列服务
+yum -y install epel-release.noarch
+yum install -y rabbitmq-server
+systemctl enable rabbitmq-server
+systemctl start rabbitmq-server
+rabbitmq-plugins enable rabbitmq_management
+systemctl restart rabbitmq-server
+systemctl stop firewalld
+setenforce 0
+cat > /etc/hosts <<EOFf
+192.168.160.10 server01
+192.168.160.20 server02
+192.168.160.30 server03
+EOFf
 
+EOF
+done < 1.txt
+if [ $? = 0 ];then echo -en "\e[1;34m "1. YUM安装：rabbitmq-server 消息队列服务已成功！"  \e[0m" ;else echo "" ; fi
+echo
+
+#2. 同步数据
+
+while read liew in
+do
+if ! [ $liew = `ip a | grep ens33 | egrep -o "[0-9]{3}\.[0-9]{3}\.[0-9]{1,3}\.[0-9]{1,3}" | head -1` ]
+then
+ssh $liew "systemctl stop rabbitmq-server"
+scp server01:/var/lib/rabbitmq/.erlang.cookie $liew:/var/lib/rabbitmq/.erlang.cookie
+ssh $liew "systemctl start rabbitmq-server"
+
+ssh $liew "rabbitmqctl stop_app"
+ssh $liew "rabbitmqctl join_cluster --ram rabbit@server01"
+ssh $liew "rabbitmqctl start_app"
+fi
+done < <(awk '$1~/192/{print $1}' /etc/hosts | sort | uniq )
+
+fi
+if  [ $ops = yes ] ; then echo -en "\e[1;34m "★ 部署：rabbitMQ 消息队列服务集群 OK" \e[0m" ;fi
+echo
 
 
 
