@@ -27,7 +27,7 @@ echo "{
 \"limit\": 1
 }
 " >10.txt
-if curl --header "session_id: 1164888804@wuhanshizhedt_1563622360" -d '@10.txt'  http://100.119.30.20:11180/business/api/condition/query_camera |grep "OK" &>/dev/null 
+if curl --header "session_id: $a" -d '@10.txt'  http://100.119.30.20:11180/business/api/condition/query_camera |grep "OK" &>/dev/null 
 then
 
 #最终比对合适的摄像头id 
