@@ -11,7 +11,15 @@ do
        break 
       fi
 done
-      
+ 
+<<EOF
+while [[ !  "$num" =~  ^[0-9]+$ ||  "$num" =~ ^0+$  ]]
+do
+        echo "【数量是数字，并且不能输入0】" 
+        read  -p  "请重新输入数量 ：" num    
+done
+EOF
+
 while :
 do
       read -p  "请输入用户密码：" -t 30 pass
