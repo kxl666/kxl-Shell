@@ -1,5 +1,5 @@
 #!/bin/bash
-if ! hsku.sh ;then wget https://raw.githubusercontent.com/kxl666/kxl666/master/hsku.sh && echo -en "\e[1;35m  下载函数库成功 \e[0m";fi
+if ! [  -e hsku.sh ];then wget https://raw.githubusercontent.com/kxl666/kxl666/master/hsku.sh && echo -en "\e[1;35m  下载函数库成功 \e[0m";fi
 echo
 sleep 2
 while [ ! -e hsku.sh ]
