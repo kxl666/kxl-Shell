@@ -3,7 +3,7 @@ read -p  "请输入用户数量" -t 30 num
 
 while true
 do
-      if [[ !  "$num" =~  ^[0-9]+$ ||  "$num" =~ ^0+$  ]] 
+      if [[ !  "$num" =~  ^[1-9][0-9]+$  ]]
        then
         echo "【数量是数字，并且不能输入0】" 
         read  -p  "请重新输入数量 ：" num
@@ -13,7 +13,7 @@ do
 done
  
 <<EOF
-while [[ !  "$num" =~  ^[0-9]+$ ||  "$num" =~ ^0+$  ]]
+while [[ !  "$num" =~  ^[1-9][0-9]+$  ]]
 do
         echo "【数量是数字，并且不能输入0】" 
         read  -p  "请重新输入数量 ：" num    
