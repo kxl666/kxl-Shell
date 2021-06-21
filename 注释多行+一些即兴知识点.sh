@@ -16,3 +16,5 @@ export PS1="\[\033]2;\h:\u \w\007\033[32;1m\]\u@$ip\h \033[35;1m\t\033[0m \[\033
 # 修改全局PSI /etc/bashrc
 [ "$PS1" = "\\s-\\v\\\$ " ] && PS1='\[\e[34m\][\u@\h\t \W]#\[\e[m\] '
 
+#gcc hello.c -o hello
+#./hello
